@@ -24,24 +24,24 @@ scrapy.Requests(url, callback),这个方法里面的参数callback传入的是�
 
  三，关于scrapy的Selector.xpath的查找参数问题
  抓取猫眼电影过程中，出现如下的网页结构：
- 	<div class="movie-hover-info">
-        <div class="movie-hover-title" title="我的女友是机器人" >
-          <span class="name ">我的女友是机器人</span>
-            <span class="score channel-detail-orange"><i class="integer">7.</i><i class="fraction">3</i></span>
-        </div>
-        <div class="movie-hover-title" title="我的女友是机器人" >
-          <span class="hover-tag">类型:</span>
+ 	&#60;div class="movie-hover-info">
+        &#60;div class="movie-hover-title" title="我的女友是机器人" >
+          &#60;span class="name ">我的女友是机器人</span>
+            &#60;span class="score channel-detail-orange">&#60;i class="integer">7.</i>&#60;i class="fraction">3</i></span>
+        &#60;/div>
+        &#60;div class="movie-hover-title" title="我的女友是机器人" >
+          &#60;span class="hover-tag">类型:</span>
           爱情／喜剧
-        </div>
-        <div class="movie-hover-title" title="我的女友是机器人" >
-          <span class="hover-tag">主演:</span>
+        &#60;/div>
+        &#60;div class="movie-hover-title" title="我的女友是机器人" >
+          &#60;span class="hover-tag">主演:</span>
           辛芷蕾／包贝尔／魏翔
-        </div>
-        <div class="movie-hover-title movie-hover-brief" title="我的女友是机器人" >
-          <span class="hover-tag">上映时间:</span>
+        &#60;/div>
+        &#60;div class="movie-hover-title movie-hover-brief" title="我的女友是机器人" >
+          &#60;span class="hover-tag">上映时间:</span>
           2020-09-11
-        </div>
-    </div>
+        &#60;/div>
+    &#60;/div>
 通过div的class="movie-hover-title"查找，查找出来的选择器用[1],[2]分开，例如传入的路径为 /div[@class="movie-hover-title"] ,只能匹配前面三个的内容，如果需要匹配第四个内容（上映时间），则需要传入的class完整的 ./div[@class="movie-hover-title movie-hover-brief"]
 
 四，多看相关手册，很多简单的问题在手册上面都有描述
