@@ -1,0 +1,9 @@
+#猫眼电影数据库建表语句
+CREATE TABLE `items` (  
+`id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',  
+`title` varchar(255) NOT NULL DEFAULT '' COMMENT '电影名称',  
+`cate` varchar(32) NOT NULL DEFAULT '' COMMENT '电影所属分类',  
+`plan_time` date DEFAULT NULL COMMENT '上映时间',  
+`create_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '添加时间',  
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
