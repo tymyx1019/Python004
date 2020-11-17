@@ -20,7 +20,7 @@ if __name__ == '__main__':
 
 3.猫类要求有“叫声”、“是否适合作为宠物”以及“名字”三个属性，其中“叫声”作为类属性，
   除凶猛动物外都适合作为宠物，猫类继承自动物类。狗类属性与猫类相同，继承自动物类。
-  
+
 4.动物园类要求有“名字”属性和“添加动物”的方法，
   “添加动物”方法要实现同一只动物（同一个动物实例）不能被重复添加的功能。
 '''
@@ -32,6 +32,7 @@ class Zoo(object):
     动物园类
     '''
     container = []
+
     def __init__(self, name=''):
         self.name = name
 
@@ -90,7 +91,7 @@ class Animal(metaclass=ABCMeta):
         self.character = character
 
     def is_terrible(self):
-        return self._eating_type == '食肉' and self._physique in ('中','大') and self._character == '凶猛'
+        return self._eating_type == '食肉' and self._physique in ('中', '大') and self._character == '凶猛'
 
     @property
     def eating_type(self):
@@ -98,7 +99,7 @@ class Animal(metaclass=ABCMeta):
 
     @eating_type.setter
     def eating_type(self, value):
-        type_list = ('食肉','食草','宠物粮')
+        type_list = ('食肉', '食草', '宠物粮')
         if value not in type_list:
             raise ValueError('进食类型必须为 {} 之一'.format(type_list))
         self._eating_type = value
@@ -109,7 +110,7 @@ class Animal(metaclass=ABCMeta):
 
     @physique.setter
     def physique(self, value):
-        physique_list = ('小','中','大')
+        physique_list = ('小', '中', '大')
         if value not in physique_list:
             raise ValueError('体型必须为 {} 之一'.format(physique_list))
 
@@ -119,7 +120,7 @@ class Animal(metaclass=ABCMeta):
 
     @character.setter
     def character(self, value):
-        character_list = ('温顺','凶猛')
+        character_list = ('温顺', '凶猛')
         if value not in character_list:
             raise ValueError('性格必须为 {} 之一'.format(character_list))
 
@@ -158,7 +159,6 @@ class Dog(Animal):
         self.name = name
 
 
-
 if __name__ == '__main__':
     try:
         # 实例化动物园
@@ -166,18 +166,25 @@ if __name__ == '__main__':
 
         # 实例化一只猫，属性包括名字、类型、体型、性格
         cat = Cat('瞄星人', '食肉', '小', '温顺')
+
+        # 实例化一只狗，属性包括名字、类型、体型、性格
         dog = Dog('旺星人', '食肉', '小', '温顺')
 
         # 增加一只猫到动物园
         z.add_animal(cat)
+
+        # 增加一只猫到动物园
         z.add_animal(dog)
 
         # 动物园是否有猫这种动物
         have_cat = hasattr(z, 'Cat')
         print(have_cat)
 
-        print(getattr(z, 'Cat').is_pets)
+        # 动物园的猫是否适合做宠物
+        if have_cat and getattr(z, 'Cat').is_pets:
+            print('动物园中的适合做宠物')
 
+        # 打印动物园中所有的动物
         print(z)
 
     except Exception as e:
