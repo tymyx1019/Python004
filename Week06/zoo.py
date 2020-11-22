@@ -20,7 +20,7 @@ if __name__ == '__main__':
 
 3.猫类要求有“叫声”、“是否适合作为宠物”以及“名字”三个属性，其中“叫声”作为类属性，
   除凶猛动物外都适合作为宠物，猫类继承自动物类。狗类属性与猫类相同，继承自动物类。
-  
+
 4.动物园类要求有“名字”属性和“添加动物”的方法，
   “添加动物”方法要实现同一只动物（同一个动物实例）不能被重复添加的功能。
 '''
@@ -31,11 +31,20 @@ class Zoo(object):
     '''
     动物园类
     '''
+
+    # 动物容器，添加后的动物都在里面
     container = []
-    def __init__(self, name=''):
+
+    def __init__(self, name='动物园'):
         self.name = name
 
     def add_animal(self, animal):
+        '''
+        给动物园添加动物
+        :param animal: 动物对象
+        :return:
+        '''
+
         # 判断是否是动物，不是则raise一个错误
         if isinstance(animal, Animal):
             class_name = animal.__class__.__name__
@@ -48,12 +57,11 @@ class Zoo(object):
     def __str__(self):
         '''
         打印动物园所有动物
-        :return: 
+        :return:
         '''
         zoo_animals = []
         if len(self.container):
             for class_name in self.container:
-                # zoo_animals = ', '.join(self.container)
                 zoo_animals.append(getattr(self, class_name).name)
 
             return '{} 包含的动物有 {}'.format(self.name, ', '.join(zoo_animals))
@@ -82,7 +90,7 @@ class Animal(metaclass=ABCMeta):
         :param name: 名字
         :param eating_type: 进食类型，'食肉','食草','宠物粮'
         :param physique: 体型，'小','中','大'
-        :param character: 性格，'温顺','凶猛'
+        :param character: 性格，'温顺','中性','凶猛'
         '''
         self.name = name
         self.eating_type = eating_type
@@ -90,7 +98,13 @@ class Animal(metaclass=ABCMeta):
         self.character = character
 
     def is_terrible(self):
-        return self._eating_type == '食肉' and self._physique in ('中','大') and self._character == '凶猛'
+        '''
+        动物是否凶猛,“体型 >= 中等”并且是“食肉类型”同时“性格凶猛”
+        :return: bool, [True 凶猛 | False 不凶猛]
+        '''
+
+        return self._eating_type == '食肉' and self._physique in (
+            '中', '大') and self._character == '凶猛'
 
     @property
     def eating_type(self):
@@ -98,7 +112,7 @@ class Animal(metaclass=ABCMeta):
 
     @eating_type.setter
     def eating_type(self, value):
-        type_list = ('食肉','食草','宠物粮')
+        type_list = ('食肉', '食草', '宠物粮')
         if value not in type_list:
             raise ValueError('进食类型必须为 {} 之一'.format(type_list))
         self._eating_type = value
@@ -109,9 +123,10 @@ class Animal(metaclass=ABCMeta):
 
     @physique.setter
     def physique(self, value):
-        physique_list = ('小','中','大')
+        physique_list = ('小', '中', '大')
         if value not in physique_list:
             raise ValueError('体型必须为 {} 之一'.format(physique_list))
+        self._physique = value
 
     @property
     def character(self):
@@ -119,15 +134,16 @@ class Animal(metaclass=ABCMeta):
 
     @character.setter
     def character(self, value):
-        character_list = ('温顺','凶猛')
+        character_list = ('温顺', '中性', '凶猛')
         if value not in character_list:
             raise ValueError('性格必须为 {} 之一'.format(character_list))
+        self._character = value
 
     @property
     def is_pets(self):
         '''
         是否适合做宠物
-        :return: bool
+        :return: bool[True|False]
         '''
         return not self.is_terrible()
 
@@ -140,7 +156,12 @@ class Cat(Animal):
     # 叫声
     shouts = '喵喵喵'
 
-    def __init__(self, name='猫', eating_type='食肉', physique='小', character='温顺'):
+    def __init__(
+            self,
+            name='猫',
+            eating_type='食肉',
+            physique='小',
+            character='温顺'):
         super().__init__(name, eating_type, physique, character)
         self.name = name
 
@@ -153,39 +174,46 @@ class Dog(Animal):
     # 叫声
     shouts = '汪汪汪'
 
-    def __init__(self, name='汪星人', eating_type='宠物粮', physique='小', character='凶猛'):
+    def __init__(
+            self,
+            name='汪星人',
+            eating_type='宠物粮',
+            physique='小',
+            character='凶猛'):
         super().__init__(name, eating_type, physique, character)
         self.name = name
 
 
-
 if __name__ == '__main__':
-    try:
-        # 实例化动物园
-        z = Zoo('时间动物园')
 
-        # 实例化一只猫，属性包括名字、类型、体型、性格
-        cat = Cat('瞄星人', '食肉', '小', '温顺')
+    # 实例化动物园
+    z = Zoo('时间动物园')
 
-        # 实例化一只狗，属性包括名字、类型、体型、性格
-        dog = Dog('旺星人', '食肉', '小', '温顺')
+    # 实例化一只猫，属性包括名字、类型、体型、性格
+    cat = Cat('瞄星人', '食肉', '小', '温顺')
 
-        # 增加一只猫到动物园
-        z.add_animal(cat)
+    # 实例化一只狗，属性包括名字、类型、体型、性格
+    dog = Dog('野狗', '食肉', '大', '凶猛')
 
-        # 增加一只猫到动物园
-        z.add_animal(dog)
+    # 增加一只猫到动物园
+    z.add_animal(cat)
 
-        # 动物园是否有猫这种动物
-        have_cat = hasattr(z, 'Cat')
-        print(have_cat)
+    # 增加一只狗到动物园
+    z.add_animal(dog)
 
-        # 动物园的猫是否适合做宠物
-        if have_cat and getattr(z, 'Cat').is_pets:
-            print('动物园中的猫适合做宠物')
+    # 动物园是否有猫这种动物
+    have_cat = hasattr(z, 'Cat')
+    print(have_cat)
 
-        # 打印动物园中所有的动物
-        print(z)
+    # 动物园的狗是否适合做宠物
+    instance_name = 'Dog'
+    if hasattr(z, instance_name) and getattr(z, instance_name).is_pets:
+        print('动物园中的 {} 适合做宠物'.format(instance_name))
+    else:
+        print(getattr(z, instance_name).eating_type)
+        print(getattr(z, instance_name).physique)
+        print(getattr(z, instance_name).character)
+        print('动物园中的 {} 不适合做宠物'.format(instance_name))
 
-    except Exception as e:
-        print(e)
+    # 打印动物园中所有的动物
+    print(z)
