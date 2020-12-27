@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+   <head>
+        <meta charset = "UTF-8" >
+        <meta name = "viewport" content = "width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title > 手机-舆情分析图表 </title>
+		
+        {% load static %}
+        <link rel = "stylesheet" href = "{% static 'css/bootstrap.min.css' %}">
+        <link href="{% static 'css/bootstrap-datetimepicker.min.css' %}" rel="stylesheet" media="screen">
+        <script src = "{% static 'js/jquery.slim.min.js' %}" > </script>
+        <script src = "{% static 'js/bootstrap.min.js' %}" > </script>
+        <script type="text/javascript" src="{% static 'js/bootstrap-datetimepicker.js' %}" charset="UTF-8"></script>
+        <script type="text/javascript" src="{% static 'js/locales/bootstrap-datetimepicker.zh-CN.js' %}" charset="UTF-8"></script>
+        <script src = "http://cdn.highcharts.com.cn/highcharts/highcharts.js"></script>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+              <li class="nav-item active">
+                <a class="nav-link" href="/">首页 </a>
+              </li>
+              <li class="nav-item">
+                <a class = "nav-link" href="#">舆情分析图表<span class="sr-only">(current)</span></a>
+              </li>
+            </ul>
+            <form class = "form-inline">
+                <input class = "form-control mr-sm-2" name="keyword" type="search" placeholder="搜索手机" value="{% if keyword %}{{ keyword }}{% endif %}">
+                <input data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd" class = "form-control mr-sm-2 form_date" name="begin_date" type="search" placeholder="评论开始时间" value="{% if begin_date != 0 %}{{ begin_date }}{% endif %}">
+                <input data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd" class = "form-control mr-sm-2 form_date" name="end_date" type="search" placeholder="评论结束时间" value="{{ end_date }}">
+                <button class = "btn btn-outline-success my-2 my-sm-0" type="submit">搜索</button>
+            </form>
+          </div>
+        </nav>
+        <div class = "container">
+            <div id = "container_mark" style="height:800px;align:center"></div>
+            <div id = "container_zhi" style="height:800px;align:center"></div>
+            <script>
+                var chart = Highcharts.chart('container_mark', {
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: '手机--舆情分析得分'
+                    },
+                    subtitle: {
+                        text: '数据来源: <a href="https://www.smzdm.com/fenlei/zhinengshouji/h5c4s0f0t0p1/#feed-main/">什么值得买</a>'
+                    },
+                    xAxis: {
+                        type: 'category',
+                        labels: {
+                            rotation: -45  // 设置轴标签旋转角度
+                        }
+                    },
+                    yAxis: {
+                        min: 0,
+                        title: {
+                            text: '得分 (分越大越值得买)'
+                        }
+                    },
+                    legend: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        pointFormat: '舆情分数: <b>{point.y:.5f} </b>'
+                    },
+                    series: [{
+                        name: '手机前十评论得分情况',
+                        data: [
+                            {% for phone in comment_list|slice:":9" %}
+                            ['{{phone.title}}', {{phone.avg_mark}}],
+                            {% endfor %}
+                            {% for phone in comment_list|slice:"9:10" %}
+                            ['{{phone.title}}', {{phone.avg_mark}}]
+                            {% endfor %}
+                        ],
+                        dataLabels: {
+                            enabled: true,
+                            rotation: -90,
+                            color: '#FFFFFF',
+                            align: 'right',
+                            format: '{point.y:.5f}', // :.1f 为保留 1 位小数
+                            y: 10
+                        },
+                        credits: {  
+                            enabled: false     //不显示LOGO 
+                        }  
+                    }]
+                });
+
+            </script>
+            <script>
+
+                var chart_zhide = Highcharts.chart('container_zhi',{
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: '值得/不值得/收藏数/评论数 数量'
+                    },
+                    subtitle: {
+                        text: '数据来源: <a href="https://www.smzdm.com/fenlei/zhinengshouji/h5c4s0f0t0p1/#feed-main/">什么值得买</a>'
+                    },
+                    xAxis: {
+                        categories: [
+                            {% for phone in comment_list|slice:":9" %}
+                            '{{phone.title}}',
+                            {% endfor %}
+                            {% for phone in comment_list|slice:"9:10" %}
+                            '{{phone.title}}'
+                            {% endfor %}
+                        ],
+                        crosshair: true
+                    },
+                    yAxis: {
+                        min: 0,
+                        title: {
+                            text: '值得/不值得/收藏数/评论数'
+                        }
+                    },
+                    tooltip: {
+                        // head + 每个 point + footer 拼接成完整的 table
+                        headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                        pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                        '<td style="padding:0"><b>{point.y} </b></td></tr>',
+                        footerFormat: '</table>',
+                        shared: true,
+                        useHTML: true
+                    },
+                    plotOptions: {
+                        column: {
+                            borderWidth: 0
+                        }
+                    },
+                    series: [
+                        
+                        {
+                            name: '值得',
+                            data: [
+                            {% for phone in comment_list|slice:":9" %}
+                                {{phone.zhi}},
+                            {% endfor %}
+                            {% for phone in comment_list|slice:"9:10" %}
+                                {{phone.zhi}}
+                            {% endfor %}
+                            ]
+                        }, 
+                    
+                        {
+                            name: '不值得',
+                            data: [
+                                {% for phone in comment_list|slice:":9" %}
+                                    {{phone.buzhi}},
+                                {% endfor %}
+                                {% for phone in comment_list|slice:"9:10" %}
+                                    {{phone.buzhi}}
+                                {% endfor %}
+                            ]
+                        },
+                        {
+                            name: '收藏数',
+                            data: [
+                                {% for phone in comment_list|slice:":9" %}
+                                    {{phone.star}},
+                                {% endfor %}
+                                {% for phone in comment_list|slice:"9:10" %}
+                                    {{phone.star}}
+                                {% endfor %}
+                            ]
+                        },
+                        {
+                            name: '评论数',
+                            data: [
+                                {% for phone in comment_list|slice:":9" %}
+                                    {{phone.comments}},
+                                {% endfor %}
+                                {% for phone in comment_list|slice:"9:10" %}
+                                    {{phone.comments}}
+                                {% endfor %}
+                            ]
+                        }
+                        
+                    
+                    ]
+                });
+
+            </script>
+            <script type="text/javascript">
+                $('.form_date').datetimepicker({
+                    language:  'zh-CN',
+                    weekStart: 1,
+                    todayBtn:  1,
+                    autoclose: 1,
+                    todayHighlight: 1,
+                    startView: 2,
+                    minView: 2,
+                    forceParse: 0
+                });
+            </script>            
+        </div>
+    </body>
+</html>
